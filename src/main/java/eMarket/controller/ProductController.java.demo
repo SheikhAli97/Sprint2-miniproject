@@ -1,0 +1,68 @@
+package eMarket.controller;
+
+import java.util.Optional;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import eMarket.EMarketApp;
+import eMarket.domain.Product;
+
+@Controller
+public class ProductController {
+    @RequestMapping("product")
+    public String getProductView(Model model) {
+    	model.addAttribute("productList", EMarketApp.getStore().getProductList());
+    	return "form/productMaster";
+    }
+    
+    @RequestMapping("product/productDetail")
+    public String getProductDetail(@RequestParam int productId, Model model) {
+    	Optional<Product> optionalProduct = EMarketApp.getStore().getProductList().stream().filter( p ->
+    			p.getId() == productId
+    		).findFirst();
+    	if (optionalProduct.isPresent()) {
+    		model.addAttribute("product", optionalProduct.get());
+    	}
+    	return "form/productDetail";
+    }
+    
+    
+    @RequestMapping(value="product/add", method = RequestMethod.POST)
+    public String addProduct(@ModelAttribute Product product, Model model) {
+    	Optional<Product> optionalProduct = EMarketApp.getStore().getProductList().stream().filter( p ->
+	    		p.getId() == product.getId()
+			).findFirst();
+		if (optionalProduct.isPresent()) { // edit
+			Product existingProduct = optionalProduct.get();
+			existingProduct.setName(product.getName());
+			existingProduct.setDescription(product.getDescription());
+			existingProduct.setPrice(product.getPrice());
+		} else { // create, add 
+			product.setId();
+	    	EMarketApp.getStore().getProductList().add(product);
+		}
+		model.addAttribute("productList", EMarketApp.getStore().getProductList());
+	
+    	return "form/productMaster";
+    }
+    
+    @RequestMapping(value="product/delete", method = RequestMethod.GET)
+    public String deleteProduct(Model model, @RequestParam int productId) {
+    	Optional<Product> optionalProduct = EMarketApp.getStore().getProductList().stream().filter( p ->
+				p.getId() == productId
+			).findFirst();
+		if (optionalProduct.isPresent()) { // delete
+			EMarketApp.getStore().getProductList().remove(optionalProduct.get());
+		}
+    	
+    	model.addAttribute("productList", EMarketApp.getStore().getProductList());
+    	return "form/productMaster";
+    }
+    
+    
+}

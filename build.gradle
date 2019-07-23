@@ -1,0 +1,93 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.4.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}" 
+		classpath "org.springframework:springloaded:1.2.8.RELEASE"
+		classpath "io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE"
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: "io.spring.dependency-management"
+
+sourceCompatibility=1.8
+targetCompatibility=1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+eclipse {
+	project {
+	  buildCommand 'org.eclipse.jdt.core.javabuilder'
+	  buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
+	  buildCommand 'org.springframework.ide.eclipse.core.springbuilder'
+	  buildCommand 'org.eclipse.wst.common.project.facet.core.builder'
+	  natures 'org.eclipse.jdt.core.javanature',
+	    'org.eclipse.jdt.groovy.core.groovyNature',
+	  	'org.eclipse.buildship.core.gradleprojectnature', 
+		'org.springframework.ide.eclipse.core.springnature', 
+		'org.eclipse.wst.common.project.facet.core.nature'
+	}
+}
+
+// tag::versions[]
+ext {
+	jasperVersion = '9.0.10'
+	groovyVersion = '2.4.15'
+	spockVersion = '1.1-groovy-2.4'	
+}
+// end::versions[]
+
+dependencies {
+	// Spring Boot
+	compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+	compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+	// JSP
+	compile("org.apache.tomcat.embed:tomcat-embed-jasper:$jasperVersion")
+	compile("javax.servlet:jstl:1.2")
+	// Bootstrap
+	compile("org.webjars:bootstrap:3.3.7")
+
+
+	// TESTING
+	// Spring
+	testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+
+	// Groovy
+	testCompile("org.codehaus.groovy:groovy-all:$groovyVersion")
+	
+	// Spock
+	testCompile("junit:junit:4.12")
+	testCompile("org.spockframework:spock-core:$spockVersion")
+	testCompile "org.spockframework:spock-spring:$spockVersion"
+	testCompile("org.hamcrest:hamcrest-core:1.3")
+	testCompile("org.hamcrest:hamcrest-library:1.3")
+
+	// Spock-reports
+	testCompile( 'com.athaydes:spock-reports:1.3.1' ) {
+		transitive = false // this avoids affecting your version of Groovy/Spock
+	}	
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// PROJECT SPECIFIC
+///////////////////////////////////////////////////////////////////////////////
+
+// name of the jar to be generated
+jar.baseName = 'sprint2.miniproject'
+jar.version = '0.0.1-SOLUTION'
+
+// name of the Eclipse project
+eclipse.project.name = 'sprint2.miniproject'
+
+
